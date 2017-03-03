@@ -50,18 +50,26 @@ const RocketChat = React.createClass({
     this.setState({ showChat: true });
   },
 
+  sanitizedSlug() {
+    const slug = this.props.course.slug.replace('(', '{').replace(')', '}');
+    return slug;
+  },
+
   render() {
     if (!(this.props.course && this.props.course.flags && this.props.course.flags.enable_chat)) {
       return <div />;
     }
 
     const privacyInfo = (
-      <p>This chatroom is accessible to students and instructors participating in the course, as well as Wiki Ed staff.</p>
+      <div>
+        <p>This chatroom is accessible to students and instructors participating in the course, as well as Wiki Ed staff.</p>
+        <p>You should be logged in automatically when this page loads. If you don't appear to be logged in, click 'Retry login' at the bottom of the chat window.</p>
+      </div>
     );
 
     // Rocket.Chat appears to double-encode the channel name to produce the URI.
-    const room = encodeURIComponent(encodeURIComponent(this.props.course.slug));
-    const chatUrl = `https://dashboardchat.wmflabs.org/group/${room}?layout=embedded`;
+    const room = encodeURIComponent(encodeURIComponent(this.sanitizedSlug()));
+    const chatUrl = `${Features.chatServer}/group/${room}?layout=embedded`;
     let chatClass = 'iframe';
     if (!this.state.authToken) {
       chatClass += ' hidden';

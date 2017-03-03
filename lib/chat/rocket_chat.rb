@@ -5,7 +5,9 @@ class RocketChat
     @user = user
     @course = course
     # Rocket.Chat must be configured to permit all valid user/channel names.
-    @username = @user.username.tr(' ', '_') if @user
+    # However, allowing parentheses causes problems in the Rocket.Chat client JS.
+    # Set it via regex: admin/General > UTF8 > UTF8 Names Validation: [^()]+
+    @username = sanitize(@user.username) if @user
     @chat_server = ENV['chat_server']
     @admin_username = ENV['chat_admin_username']
     @admin_password = ENV['chat_admin_password']
@@ -21,7 +23,7 @@ class RocketChat
   def create_channel_for_course
     return unless Features.enable_course_chat?(@course)
     return if @course.chatroom_id
-    data = { name: @course.slug }
+    data = { name: sanitize(@course.slug) }
     response = api_post(CREATE_ROOM_ENDPOINT, data, admin_auth_header)
     room_id = JSON.parse(response.body).dig('group', '_id')
     raise StandardError unless room_id
@@ -129,6 +131,10 @@ class RocketChat
   RANDOM_PASSWORD_LENGTH = 12
   def random_password
     ('a'..'z').to_a.sample(RANDOM_PASSWORD_LENGTH).join
+  end
+
+  def sanitize(string)
+    string.tr(' ', '_').tr('(', '{').tr(')', '}')
   end
 
   class ChatDisabledError < StandardError; end
