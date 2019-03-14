@@ -209,6 +209,7 @@ describe 'timeline editing', type: :feature, js: true do
       visit "/courses/#{course_with_timeline.slug}/timeline"
       accept_confirm { click_button 'Delete Timeline' }
       expect(page).to have_content 'Add Assignment'
+      ensure_requests_finish
     end
   end
 end

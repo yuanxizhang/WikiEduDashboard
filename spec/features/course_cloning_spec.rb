@@ -104,5 +104,7 @@ describe 'cloning a course', js: true do
     expect(new_course.submitted).to eq(false)
     expect(new_course.user_count).to be_zero
     expect(new_course.article_count).to be_zero
+
+    ensure_requests_finish
   end
 end

@@ -32,6 +32,8 @@ describe 'multiwiki assignments', type: :feature, js: true do
       within('#users') do
         expect(page).to have_content 'ta:wiktionary:ஆங்கிலம்'
       end
+
+      ensure_requests_finish
     end
   end
 
@@ -81,6 +83,8 @@ describe 'multiwiki assignments', type: :feature, js: true do
       within('#users') do
         expect(page).to have_content 'wikisource:Heyder Cansa'
       end
+
+      ensure_requests_finish
     end
   end
 
@@ -99,6 +103,8 @@ describe 'multiwiki assignments', type: :feature, js: true do
       within('#users') do
         expect(page).to have_content 'incubator:wikimedia:Wp/kiu/Hey'
       end
+
+      ensure_requests_finish
     end
   end
 end

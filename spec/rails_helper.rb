@@ -154,3 +154,14 @@ def pass_pending_spec
   end
   raise 'this test passed — this time'
 end
+
+# This is a workaround for Capybara race conditions
+# where a routing error at the end of one test, caused
+# by the database reset, surfaces as an error in the
+# following test.
+# These errors started happening on Mac systems after
+# the removal of database_cleaner and the switch
+# to transactional mode.
+def ensure_requests_finish
+  sleep 1
+end

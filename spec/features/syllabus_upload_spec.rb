@@ -34,6 +34,7 @@ describe 'syllabus upload', type: :feature, js: true do
       click_link 'save'
       expect(page).not_to have_content 'Syllabus'
       expect(course.reload.syllabus_file_name).to eq('syllabus.pdf')
+      ensure_requests_finish
     end
   end
 end
