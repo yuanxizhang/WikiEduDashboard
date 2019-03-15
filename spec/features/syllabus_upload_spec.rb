@@ -19,6 +19,7 @@ describe 'syllabus upload', type: :feature, js: true do
       visit "/courses/#{course.slug}?syllabus_upload=true"
       expect(page).to have_content course.title
       expect(page).not_to have_content 'Syllabus'
+      ensure_requests_finish
     end
   end
 

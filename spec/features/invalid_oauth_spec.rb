@@ -13,6 +13,7 @@ describe 'a user with invalid oauth credentials', type: :feature do
     visit root_path
     expect(page).to have_content error_message
     expect(page).to have_content 'Log in'
+    ensure_requests_finish
   end
 end
 

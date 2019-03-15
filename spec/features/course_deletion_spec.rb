@@ -12,7 +12,7 @@ describe 'course deletion', type: :feature, js: true do
     visit "/courses/#{course.slug}"
 
     expect(Course.count).to eq(1)
-
+    expect(page).to have_content 'Delete course'
     accept_prompt(with: course.title) do
       click_button 'Delete course'
     end

@@ -65,6 +65,8 @@ describe 'multiwiki assignments', type: :feature, js: true do
       within('#users') do
         expect(page).to have_content 'es:wikisource:No le des prisa'
       end
+
+      ensure_requests_finish
     end
   end
 
