@@ -48,13 +48,6 @@ class EmailProcessor
     @course = @sender.courses.last if @sender
   end
 
-  def from_signature(from)
-    ''"
-
-    From #{from[:full]}
-    "''
-  end
-
   def define_content_and_reference_id
     @content = address_includes_forwarding_domain? ? @email.raw_body : @email.body
     reference = @email.raw_body.match('ref_(.*)_ref')
