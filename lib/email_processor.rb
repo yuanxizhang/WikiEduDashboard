@@ -23,14 +23,22 @@ class EmailProcessor
 
   def define_owner
     recipient_emails = @email.to.pluck(:email)
-    @owner = User.find_by(greeter: true, email: recipient_emails)
+    @owner = SpecialUsers.wikipedia_experts.find do |expert|
+      recipient_emails.include?(expert.email)
+    end
+
+    if @owner.nil?
+      permissions = [User::Permissions::ADMIN, User::Permissions::SUPER_ADMIN]
+      @owner = User.find_by(email: recipient_emails, permissions: permissions)
+    end
   end
 
   def define_sender
     @from_address = @email.from[:email]
-    if @from_address.end_with?(ENV['TICKET_FORWARDING_DOMAIN'])
-      addresses = retrieve_forwarder_email
-      @sender = User.find_by(greeter: false, email: addresses)
+    if address_includes_forwarding_domain?
+      email_address = retrieve_forwarder_email
+      permissions = [User::Permissions::NONE, User::Permissions::INSTRUCTOR]
+      @sender = User.find_by(email: email_address, permissions: permissions)
     elsif @from_address
       @sender = User.find_by(email: @from_address)
     end
@@ -48,9 +56,13 @@ class EmailProcessor
   end
 
   def define_content_and_reference_id
-    @content = @email.body
+    @content = address_includes_forwarding_domain? ? @email.raw_body : @email.body
     reference = @email.raw_body.match('ref_(.*)_ref')
     @reference_id = reference[1] if reference
+  end
+
+  def address_includes_forwarding_domain?
+    @from_address.end_with?(ENV['TICKET_FORWARDING_DOMAIN'])
   end
 
   def dispense_or_thread_ticket

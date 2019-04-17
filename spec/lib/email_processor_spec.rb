@@ -10,9 +10,13 @@ describe EmailProcessor do
     let(:student) { create(:user, username: 'student', email: 'student@email.com') }
     let(:student_courses_user) { create(:courses_user, user: student, course: course) }
 
-    let(:expert) { create(:admin, greeter: true, username: 'expert', email: 'expert@wikiedu.org') }
+    let(:expert) { create(:admin, username: 'expert', email: 'expert@wikiedu.org') }
     let(:expert_courses_user) do
       create(:courses_user, user: expert, course: course, role: 4)
+    end
+
+    before do
+      allow(SpecialUsers).to receive(:wikipedia_experts).and_return([expert])
     end
 
     it 'creates an associated Ticket and Message' do
@@ -30,6 +34,24 @@ describe EmailProcessor do
 
       ticket = TicketDispenser::Ticket.first
       expect(ticket.owner).to eq(expert)
+
+      message = ticket.messages.first
+      expect(message.sender).to eq(student)
+    end
+
+    it 'assigns the ticket and message to an admin if no expert is found' do
+      admin = create(:admin, username: 'admin', email: 'admin@wikiedu.org')
+      email = create(:email,
+                     to: [{ email: admin.email }],
+      from: { email: student.email })
+      processor = described_class.new(email)
+      processor.process
+
+      expect(TicketDispenser::Ticket.all.count).to eq(1)
+      expect(TicketDispenser::Message.all.count).to eq(1)
+
+      ticket = TicketDispenser::Ticket.first
+      expect(ticket.owner).to eq(admin)
 
       message = ticket.messages.first
       expect(message.sender).to eq(student)
@@ -112,6 +134,40 @@ describe EmailProcessor do
       message = TicketDispenser::Message.first
       expect(ticket.owner).to eq(expert)
       expect(message.sender).to eq(student)
+    end
+
+    it 'should exclude the entire raw body by default' do
+      email = create(:email,
+                     to: [{ email: expert.email }],
+                     from: { email: student.email },
+                     body: 'shortened body',
+                     raw_body: 'longer body')
+      processor = described_class.new(email)
+      processor.process
+
+      expect(TicketDispenser::Ticket.all.count).to eq(1)
+      expect(TicketDispenser::Message.all.count).to eq(1)
+
+      message = TicketDispenser::Message.first
+      expect(message.content).to eq('shortened body')
+    end
+
+    it 'should include the entire message if the email is forwarded' do
+      student
+      domain = ENV['TICKET_FORWARDING_DOMAIN']
+      email = create(:email,
+                     to: [{ email: expert.email }],
+                     from: { email: "other-staff@#{domain}" },
+                     body: 'shortened body',
+                     raw_body: 'longer body')
+      processor = described_class.new(email)
+      processor.process
+
+      expect(TicketDispenser::Ticket.all.count).to eq(1)
+      expect(TicketDispenser::Message.all.count).to eq(1)
+
+      message = TicketDispenser::Message.first
+      expect(message.content).to eq('longer body')
     end
   end
 
