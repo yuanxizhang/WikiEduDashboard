@@ -136,8 +136,6 @@ describe 'Instructor users', type: :feature, js: true do
     end
 
     it 'is able to assign articles' do
-      pending 'This sometimes fails on travis.'
-
       visit "/courses/#{Course.first.slug}/students"
 
       # Assign an article
@@ -176,22 +174,15 @@ describe 'Instructor users', type: :feature, js: true do
         click_button 'Done'
       end
       expect(page).not_to have_content 'Article 1'
-
-      pass_pending_spec
     end
 
     it 'is able to remove students from the course' do
-      pending 'This sometimes fails on travis.'
-
       visit "/courses/#{Course.first.slug}/students"
 
       click_button 'Add/Remove Students'
       find('button.border.plus', text: '-', match: :first).click
       click_button 'OK'
-      sleep 1
       expect(page).not_to have_content 'Student A'
-
-      pass_pending_spec
     end
 
     it 'is able to notify users with overdue training' do

@@ -279,8 +279,6 @@ describe 'the course page', type: :feature, js: true do
     end
 
     it 'allow instructor to add an available article' do
-      pending 'This sometimes fails for unknown reasons.'
-
       stub_info_query
       login_as(admin)
       stub_oauth_edit
@@ -293,13 +291,9 @@ describe 'the course page', type: :feature, js: true do
       sleep 1
       assigned_articles_table = page.find(:css, '#available-articles table.articles', match: :first)
       expect(assigned_articles_table).to have_content 'Education'
-
-      pass_pending_spec
     end
 
     it 'allows instructor to remove an available article' do
-      pending 'This sometimes fails for unknown reasons.'
-
       stub_info_query
       stub_raw_action
       Assignment.destroy_all
@@ -321,8 +315,6 @@ describe 'the course page', type: :feature, js: true do
         click_button 'Remove'
       end
       expect(assigned_articles_section).not_to have_content 'Education'
-
-      pass_pending_spec
     end
 
     it 'allows student to select an available article' do
