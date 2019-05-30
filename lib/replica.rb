@@ -148,7 +148,7 @@ class Replica
   end
 
   def do_post(endpoint, key, data)
-    url = "https://tools.wmflabs.org/wikiedudashboard/#{endpoint}"
+    url = "https://tools.wmflabs.org/wikiedudashboard-test/#{endpoint}"
     database_params = project_database_params_post
     Net::HTTP::post_form(URI.parse(url),
                          'db' => database_params['db'],
@@ -159,7 +159,7 @@ class Replica
 
   # Query URL for the WikiEduDashboardTools repository
   def compile_query_url(endpoint, query)
-    base_url = 'https://tools.wmflabs.org/wikiedudashboard/'
+    base_url = 'https://tools.wmflabs.org/wikiedudashboard-test/'
     "#{base_url}#{endpoint}?#{project_database_params}&#{query}"
   end
 

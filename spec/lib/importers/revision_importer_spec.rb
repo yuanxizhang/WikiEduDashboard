@@ -57,7 +57,7 @@ describe RevisionImporter do
         VCR.use_cassette 'revision_importer/all' do
           subject
         end
-        expect(Revision.count).to eq(75)
+        expect(Revision.count).to eq(76)
       end
     end
 
@@ -74,16 +74,16 @@ describe RevisionImporter do
         VCR.use_cassette 'revision_importer/newer' do
           subject
         end
-        expect(Revision.count).to eq(52)
+        expect(Revision.count).to eq(53)
       end
     end
 
     context 'when there are edits to articles with four-byte unicode characters in the title' do
       # Workaround for # https://github.com/WikiEducationFoundation/WikiEduDashboard/issues/1744
       let(:home_wiki) { Wiki.new(language: 'zh', project: 'wikipedia', id: 999) }
-      let(:course) { create(:course, start: '2018-05-26', end: '2018-05-27') }
+      let(:course) { create(:course, start: '2019-04-30', end: '2019-05-02') }
 
-      let(:user) { create(:user, username: '-Zest') }
+      let(:user) { create(:user, username: 'Elmond') }
 
       it 'handles revisions with four-byte unicode characters' do
         VCR.use_cassette 'four-byte-unicode' do
