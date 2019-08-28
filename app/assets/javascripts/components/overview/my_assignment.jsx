@@ -73,9 +73,9 @@ const Actions = ({
 };
 
 // Links Components
-const BibliographyLink = () => {
-  const link = 'https://en.wikipedia.org/wiki/Special:MyPage/Bibliography?veaction=edit&preload=Template:Dashboard.wikiedu.org_bibliography';
-  return <a href={link} target="_blank">{I18n.t('assignments.bibliography')}</a>;
+const BibliographyLink = ({ assignment }) => {
+  const url = `${assignment.sandboxUrl}/Bibliography?veaction=edit&preload=Template:Dashboard.wikiedu.org_bibliography`;
+  return <a href={url} target="_blank">{I18n.t('assignments.bibliography')}</a>;
 };
 
 const AssignedToLink = ({ name, members }) => {
@@ -123,7 +123,7 @@ const Links = ({ articleTitle, assignment, current_user }) => {
   const { username } = current_user;
 
   let actions = [
-    <BibliographyLink key={`bibliography-${id}`} />,
+    <BibliographyLink key={`bibliography-${id}`} assignment={assignment} />,
     <SandboxLink key={`sandbox-${id}`} assignment={assignment} />
   ];
 
