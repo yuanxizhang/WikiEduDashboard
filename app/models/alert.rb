@@ -119,7 +119,7 @@ class Alert < ApplicationRecord
   def email_target_user
     return if emails_disabled?
     return if target_user.nil?
-    AlertMailer.send_alert_email(self, target_user)
+    mailer.send_alert_email(self, target_user)
     update_attribute(:email_sent_at, Time.zone.now)
   end
 
@@ -137,6 +137,10 @@ class Alert < ApplicationRecord
   #########################
   # Type-specific methods #
   #########################
+
+  def mailer
+    AlertMailer
+  end
 
   def main_subject
     raise NotImplementedError
