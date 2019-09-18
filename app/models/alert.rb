@@ -123,6 +123,13 @@ class Alert < ApplicationRecord
     update_attribute(:email_sent_at, Time.zone.now)
   end
 
+  def send_email
+    return if emails_disabled?
+    return if opted_out?
+    mailer.send_email(self)
+    update_attribute(:email_sent_at, Time.zone.now)
+  end
+
   # Disable emails for specific alert types in application.yml, like so:
   #   ProductiveCourseAlert_email_disabled: 'true'
   def emails_disabled?
@@ -132,6 +139,23 @@ class Alert < ApplicationRecord
   # This can be used to copy dashboard emails to Salesforce
   def bcc_to_salesforce_email
     ENV['bcc_to_salesforce_email']
+  end
+
+  def opt_out_link
+    "https://#{ENV['dashboard_url']}/update_email_preferences/#{user.username}#{opt_out_params}"
+  end
+
+  def opt_out_params
+    "?type=#{self.class}&token=#{user.email_preferences_token}"
+  end
+
+  def opted_out?
+    return false unless user_profile
+    !user_profile.email_allowed?(self.class.to_s)
+  end
+
+  def user_profile
+    @user_profile ||= user&.user_profile || user&.create_user_profile
   end
 
   #########################
@@ -156,10 +180,6 @@ class Alert < ApplicationRecord
 
   def resolvable?
     false
-  end
-
-  def opt_out_link
-    nil
   end
 
   def resolve_explanation

@@ -32,27 +32,7 @@ class OverdueTrainingAlert < Alert
     "https://#{ENV['dashboard_url']}/courses/#{course.slug}"
   end
 
-  def opt_out_link
-    "https://#{ENV['dashboard_url']}/update_email_preferences/#{user.username}#{opt_out_params}"
-  end
-
-  def send_email
-    return if emails_disabled?
-    return if opted_out?
-    OverdueTrainingAlertMailer.send_email(self)
-  end
-
-  private
-
-  def opted_out?
-    !user_profile.email_allowed?('OverdueTrainingAlert')
-  end
-
-  def opt_out_params
-    "?type=OverdueTrainingAlert&token=#{user.email_preferences_token}"
-  end
-
-  def user_profile
-    user.user_profile || user.create_user_profile
+  def mailer
+    OverdueTrainingAlertMailer
   end
 end
