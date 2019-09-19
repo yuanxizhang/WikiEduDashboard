@@ -28,6 +28,7 @@ Metrics/ClassLength:
   Max: 127 # We should bring this down, ideally to the default of 100
   Exclude: # These are too big, and should be shrunk if feasible.
     - 'app/models/course.rb'
+    - 'app/models/alert.rb'
     - 'app/controllers/surveys_controller.rb'
     - 'app/controllers/campaigns_controller.rb'
     - 'app/controllers/courses_controller.rb'
